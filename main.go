@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"start-up/user"
 
@@ -17,18 +16,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println("Connection OK")
+	userRepository := user.NewRepository(db)
+	userService := user.NewService(userRepository)
 
-	var users []user.User
-	lenth := len(users)
-	fmt.Println(lenth)
+	userInput := user.RegisterUserInput{}
+	userInput.Name = "Test User Input"
+	userInput.Email = "din@testnih.com"
+	userInput.Occupation = "Nganggur"
+	userInput.Password = "inipass"
 
-	db.Find(&users)
-	length := len(users)
-	fmt.Println(length)
-
-	for _, user := range users {
-		fmt.Println(user.Name)
-		fmt.Println(user.Email)
-	}
+	userService.RegisterUser(userInput)
 }
