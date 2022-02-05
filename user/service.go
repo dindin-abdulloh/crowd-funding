@@ -8,7 +8,8 @@ import (
 
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
-	Login(login LoginInput) (User, error)
+	Login(input LoginInput) (User, error)
+	IsEmailAvailable(input CheckEmailInput) (bool, error)
 }
 
 type service struct {
@@ -44,22 +45,18 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 }
 
 func (s *service) Login(input LoginInput) (User, error) {
-	// get email & password
+
 	email := input.Email
 	password := input.Password
 
-	// search user having email
 	user, err := s.repository.FindByEmail(email)
-
 	if err != nil {
-		return user, nil
+		return user, err
 	}
 
-	// check existing user
 	if user.ID == 0 {
 		return user, errors.New("No user found on that email")
 	}
-	// check password
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
@@ -67,4 +64,20 @@ func (s *service) Login(input LoginInput) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
+	email := input.Email
+
+	user, err := s.repository.FindByEmail(email)
+
+	if err != nil {
+		return false, err
+	}
+
+	if user.ID == 0 {
+		return true, nil
+	}
+
+	return false, nil
 }
