@@ -153,7 +153,7 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 
 }
 
-//
+//Upload Avatar
 func (h *userHandler) UploadAvatar(c *gin.Context) {
 	// c.SaveUploadedFile()
 	// input dari user
@@ -173,7 +173,8 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 
 	}
 
-	userID := 25
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
 
 	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
 
